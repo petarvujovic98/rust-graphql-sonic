@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "Tsvector",
+    "actix",
+    "dotenv",
+    "flushc",
+    "ilike",
+    "tsquery"
+  ]
+}
