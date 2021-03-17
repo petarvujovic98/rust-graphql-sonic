@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13.1@sha256:c32f3f8364d79f71958c9ada74c43c2033d7e13d9d5fc21d3ba89322e6559c9d
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - '5432:5432'
+
+  # sonic:
+  #   image: valeriansaliou/sonic:v1.3.0@sha256:35cd79a23f74633fac7e0dc3a3b50a0bc644ce4935cb3d58c6417880d55941e8
+  #   restart: always
+  #   volumes:
+  #     - sonic_data:/var/lib/sonic/store
+  #     - ./sonic.cfg:/etc/sonic.cfg
+  #   ports:
+  #     - "1491:1491"
+
+volumes:
+  postgres_data: ~
+  # sonic_data: ~
