@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate diesel_migrations;
+
 use diesel::{Connection, PgConnection};
 use rust_graphql_sonic::{
     data::{get_tennis_matches, get_tennis_players},
@@ -10,12 +13,17 @@ use std::env;
 // The maximum number of parameters a PostgreSQL query can accept
 const MAX_PARAMS: usize = 65534;
 
+// Embed migrations
+embed_migrations!("migrations");
+
 fn main() -> std::result::Result<(), Box<dyn std::error::Error + 'static>> {
     // Initialize the environment variables with dotenv and get the required values from the environment
     dotenv::dotenv().ok();
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL missing!");
     let sonic_url = env::var("SONIC_URL").expect("SONIC_URL missing!");
-    let sonic_pwd = env::var("SONIC_PWD").unwrap_or_default();
+    let sonic_pwd = env::var("SONIC_PASSWORD").unwrap_or_default();
+
+    let tennis_atp_path = &env::args().collect::<Vec<String>>()[1];
 
     // Connect to a Sonic channel in ingest mode
     let channel = IngestChannel::start(sonic_url, sonic_pwd)?;
@@ -23,11 +31,14 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error + 'static>> {
     // Create a connection manager and connect to database
     let connection = PgConnection::establish(&db_url)?;
 
+    // Run migrations
+    embedded_migrations::run_with_output(&connection, &mut std::io::stdout())?;
+
     // Read all the players from the csv file and store them in a HashMap
-    let players = get_tennis_players();
+    let players = get_tennis_players(&tennis_atp_path);
 
     // Read all the matches and tourneys from the csv files and store them in HashMaps
-    let (tourneys, matches) = get_tennis_matches();
+    let (tourneys, matches) = get_tennis_matches(&tennis_atp_path);
 
     // Allocate memory for a vector of Item objects
     let mut items = Vec::<Item>::with_capacity(MAX_PARAMS / 4);

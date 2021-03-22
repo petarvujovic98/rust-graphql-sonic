@@ -2,9 +2,9 @@ use std::{collections::HashMap, fs};
 
 use super::{Match, TennisPlayer, Tourney};
 
-pub fn get_tennis_players() -> HashMap<i32, TennisPlayer> {
+pub fn get_tennis_players(path: &str) -> HashMap<i32, TennisPlayer> {
     let mut players = HashMap::<i32, TennisPlayer>::new();
-    for line in fs::read_to_string("tennis_atp/atp_players.csv")
+    for line in fs::read_to_string(format!("{}/atp_players.csv", path))
         .expect("Could not read players' file!")
         .lines()
     {
@@ -17,11 +17,12 @@ pub fn get_tennis_players() -> HashMap<i32, TennisPlayer> {
 }
 
 fn get_single_file_matches(
+    path: &str,
     filename: String,
     tourneys: &mut HashMap<String, Tourney>,
     matches: &mut HashMap<String, Match>,
 ) {
-    for line in fs::read_to_string(format!("tennis_atp/{}", filename))
+    for line in fs::read_to_string(format!("{}/{}", path, filename))
         .unwrap_or_default()
         .lines()
         .skip(1)
@@ -45,17 +46,17 @@ fn get_single_file_matches(
     }
 }
 
-pub fn get_tennis_matches() -> (HashMap<String, Tourney>, HashMap<String, Match>) {
+pub fn get_tennis_matches(path: &str) -> (HashMap<String, Tourney>, HashMap<String, Match>) {
     let mut tourneys = HashMap::<String, Tourney>::new();
     let mut matches = HashMap::<String, Match>::new();
 
-    let files = fs::read_dir("tennis_atp/")
+    let files = fs::read_dir(format!("{}/", path))
         .unwrap()
         .map(|path| path.unwrap().file_name().into_string().unwrap_or_default())
         .filter(|filename| filename.contains("atp_matches") && filename.len() == 20);
 
     for file in files {
-        get_single_file_matches(file, &mut tourneys, &mut matches);
+        get_single_file_matches(path, file, &mut tourneys, &mut matches);
     }
 
     (tourneys, matches)
