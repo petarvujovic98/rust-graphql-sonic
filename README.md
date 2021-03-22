@@ -90,23 +90,35 @@ format!(
 
 ## Setup
 
-The project requires a Sonic server installation to work. You can install sonic any way
-you prefer but you will have to change the path to the sonic binary in the
-[`sonic.service`](https://github.com/petarvujovic98/rust-graphql-sonic/blob/master/sonic/sonic.service) file.
+In order to run this project you will need to provide PostgreSQL and Sonic server URLs or run this project using `docker-compose`.
 
-After this you can run the setup the project by running the
-[`setup_project.sh`](https://github.com/petarvujovic98/rust-graphql-sonic/blob/master/setup_project.sh) script.
+Before running the web server you need to fill the database and Sonic instance with the data which you can do by running the `filler`
+binary crate or by running the `filler` service with docker-compose. This service requires you to download the tennis_atp repository
+files which you can do by running [`setup_project.sh`](https://github.com/petarvujovic98/rust-graphql-sonic/blob/master/setup_project.sh)
+script.
 
 ## Running the project
 
 ### Fill database and sonic
 
 ```shell
-cargo run --bin fill-data
+cargo run --bin filler ./tennis_atp
+```
+
+or with docker-compose:
+
+```shell
+docker-compose up filler
 ```
 
 ### Run server
 
 ```shell
-cargo run --bin main
+cargo run --bin server
+```
+
+or with docker-compose:
+
+```shell
+docker-compose up server
 ```
