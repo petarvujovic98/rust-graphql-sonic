@@ -8,7 +8,7 @@ use async_graphql_actix_web::{Request, Response, WSSubscription};
 use crate::RGSSchema;
 
 /// The path prefix to use for the routes in this module
-const SCOPE: &str = "/graphql";
+pub const SCOPE: &str = "/graphql";
 
 #[post("")]
 // The index route that handles the GraphQL requests
